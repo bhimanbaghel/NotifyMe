@@ -1,14 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+// Check if we're in production mode
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: process.env.NODE_ENV === 'production' 
-      ? '/NotifyMe/' 
-      : '/'
+    // Use absolute path for GitHub Pages
+    publicPath: isProduction ? '/NotifyMe/' : '/'
   },
   module: {
     rules: [
@@ -30,7 +32,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
+      // Add base href for GitHub Pages
+      ...(isProduction ? {
+        base: '/NotifyMe/'
+      } : {})
     })
   ],
   devServer: {

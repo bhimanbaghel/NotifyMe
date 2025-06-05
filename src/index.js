@@ -10,7 +10,7 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename="/NotifyMe">
+    <BrowserRouter>
       <App />
     </BrowserRouter>
   </React.StrictMode>

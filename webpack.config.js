@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+const webpack = require('webpack');
 
 // Check if we're in production mode
 const isProduction = process.env.NODE_ENV === 'production';
@@ -37,6 +39,10 @@ module.exports = {
       ...(isProduction ? {
         base: '/NotifyMe/'
       } : {})
+    }),
+    new Dotenv(),
+    new webpack.DefinePlugin({
+        'process.env.PUBLIC_URL': JSON.stringify(isProduction ? '/NotifyMe' : '')
     })
   ],
   devServer: {

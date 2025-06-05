@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,30 +22,58 @@ const RegisterPage = () => {
     }));
   };
 
+  const getApiBaseUrl = () => {
+    // Use local backend during development on port 5001
+    if (process.env.NODE_ENV === 'development') {
+      return 'http://localhost:5001';
+    }
+    // Use ngrok tunnel for GitHub Pages testing
+    // IMPORTANT: Replace 'your-ngrok-id.ngrok.io' with your actual ngrok URL in LoginPage.jsx as well
+    if (window.location.hostname === 'bhimanbaghel.github.io') {
+      return 'https://your-ngrok-id.ngrok.io'; 
+    }
+    // Default to relative path
+    return '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
+    setLoading(true);
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError('Passwords do not match.');
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-
     try {
-      // TODO: Implement actual registration API call
-      console.log('Registration submitted:', formData);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Redirect to login page after successful registration
-      navigate('/login', { state: { registered: true } });
-    } catch (error) {
-      setError('Registration failed. Please try again.');
-      console.error('Registration error:', error);
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await axios.post(
+        `${apiBaseUrl}/api/auth/register`,
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      if (response.data.success) {
+        setSuccessMessage(response.data.message || 'Registration successful! Please log in.');
+        // Optionally, navigate to login page after a delay or directly
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000); // Navigate after 2 seconds
+      } else {
+        setError(response.data.message || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 
+                       err.message || 
+                       'Registration failed. Please try again.';
+      setError(errorMsg);
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
@@ -55,33 +85,39 @@ const RegisterPage = () => {
         <div className="col-md-6 col-lg-5">
           <div className="card shadow">
             <div className="card-body p-5">
-              <h2 className="text-center mb-4">Create Account</h2>
+              <h2 className="text-center mb-4">Sign Up</h2>
               
               {error && (
                 <div className="alert alert-danger" role="alert">
                   {error}
                 </div>
               )}
+
+              {successMessage && (
+                <div className="alert alert-success" role="alert">
+                  {successMessage}
+                </div>
+              )}
               
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Name
+                  <label htmlFor="username" className="form-label">
+                    Username
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    id="name"
-                    name="name"
-                    value={formData.name}
+                    id="username"
+                    name="username"
+                    value={formData.username}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
-                    Email Address
+                    Email address
                   </label>
                   <input
                     type="email"
@@ -106,13 +142,10 @@ const RegisterPage = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    minLength="8"
+                    minLength="6" 
                   />
-                  <div className="form-text">
-                    Must be at least 8 characters long.
-                  </div>
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="confirmPassword" className="form-label">
                     Confirm Password
@@ -125,6 +158,7 @@ const RegisterPage = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
+                    minLength="6"
                   />
                 </div>
                 
@@ -134,7 +168,7 @@ const RegisterPage = () => {
                     className="btn btn-primary btn-lg"
                     disabled={loading}
                   >
-                    {loading ? 'Creating Account...' : 'Create Account'}
+                    {loading ? 'Signing up...' : 'Sign Up'}
                   </button>
                 </div>
               </form>
@@ -143,7 +177,7 @@ const RegisterPage = () => {
                 <p>
                   Already have an account?{' '}
                   <Link to="/login" className="text-decoration-none">
-                    Log in
+                    Log In
                   </Link>
                 </p>
               </div>

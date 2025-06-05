@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services/api';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
   const [error, setError] = useState('');
@@ -24,19 +25,23 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      // TODO: Implement actual login API call
-      console.log('Login submitted:', formData);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // For demo purposes - normally would set auth token from response
-      localStorage.setItem('userLoggedIn', 'true');
-      
-      // Redirect to dashboard after login
-      navigate('/dashboard');
+      const response = await authService.login(
+        formData.username,
+        formData.password
+      );
+
+      if (response.data.success) {
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        navigate('/dashboard');
+      } else {
+        setError(response.data.message || 'Login failed');
+      }
     } catch (error) {
-      setError('Invalid email or password. Please try again.');
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        'Login failed. Please try again.';
+      setError(errorMsg);
       console.error('Login error:', error);
     } finally {
       setLoading(false);
@@ -59,15 +64,15 @@ const LoginPage = () => {
               
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Email Address
+                  <label htmlFor="username" className="form-label">
+                    Username
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     className="form-control"
-                    id="email"
-                    name="email"
-                    value={formData.email}
+                    id="username"
+                    name="username"
+                    value={formData.username}
                     onChange={handleChange}
                     required
                   />

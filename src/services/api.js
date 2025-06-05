@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -28,8 +28,8 @@ api.interceptors.request.use(
 
 // Auth services
 export const authService = {
-  login: (email, password) => {
-    return api.post('/auth/login', { email, password });
+  login: (username, password) => {
+    return api.post('/auth/login', { username, password });
   },
   
   register: (userData) => {

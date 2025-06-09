@@ -14,7 +14,7 @@ export const API_CONFIG = {
   // GitHub Pages deployment
   GITHUB_PAGES: {
     hostname: 'bhimanbaghel.github.io',
-    apiUrl: 'https://chubby-cities-leave.loca.lt/api'
+    apiUrl: 'https://two-apples-eat.loca.lt/api'
   },
   
   // Local development fallback

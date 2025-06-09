@@ -4,6 +4,10 @@
  * This file manages API URLs for different deployment environments:
  * - Local Development: http://localhost:5001/api or http://127.0.0.1:5001/api
  * - GitHub Pages: https://chubby-cities-leave.loca.lt/api (via localtunnel)
+ * 
+ * Note: For localtunnel deployments, the API service includes:
+ * - 'bypass-tunnel-reminder' header to skip the verification page
+ * - Custom 'User-Agent' header as additional bypass method
  */
 
 export const API_CONFIG = {

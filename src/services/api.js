@@ -6,6 +6,8 @@ const api = axios.create({
   baseURL: getApiUrl(),
   headers: {
     'Content-Type': 'application/json',
+    'bypass-tunnel-reminder': 'true',
+    'User-Agent': 'NotifyMe-Frontend/1.0',
   },
 });
 
